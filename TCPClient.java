@@ -1,71 +1,52 @@
+// Chase Rebstock
 import java.io.*;
 import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 class TCPClient {
-	public static void main(String argv[]) throws Exception
-    {
-        String sentence = "";
-        String modifiedSentence = "";
+    public static void main(String argv[]) throws Exception {
+        // Print START TIME
+        Date date1 = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        System.out.println("START TIME: " + formatter.format(date1));
 
-        System.out.println("This is client side!!!");
-		System.out.println("----------------------");
-		
-		Date date = new Date();
-		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-		System.out.println("START TIME: " + formatter.format(date));
-		
-        // Create input stream
-        BufferedReader inFromUser =
-          new BufferedReader(new InputStreamReader(System.in));
-        
-        // Create client socket, connect to server at port 6789
-        Socket clientSocket = new Socket("localhost", 6789);
-        
-        // Create output stream attached to socket
-        DataOutputStream outToServer =
-          new DataOutputStream(clientSocket.getOutputStream());
+        // Input from user
+        BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
 
-        // Create input stream attached to socket
-        BufferedReader inFromServer =
-          new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        
-        while(!sentence.equals("Over"))
-        {
-	        try {    
-	        	
-	            // Read line from client input
-	            sentence = inFromUser.readLine();
-	            
-		        // Send line to server
-		        outToServer.writeBytes(sentence + '\n');
-		        System.out.println("SEND TO SERVER: " + sentence);
-		
-		        // Read line from server
-		        modifiedSentence = inFromServer.readLine();
-		        
-		        System.out.println("TEXT MESSAGE RECEIVED FROM SERVER: " + modifiedSentence);
-	        }
-			catch(IOException i)
-			{
-				System.out.println(i);
-			}
-        }
-        
-		// close the connection
-		try
-		{
-			outToServer.close();
-			inFromUser.close();
-	
-	        // Close client socket 
-	        clientSocket.close();
-		}
-		catch(IOException i)
-		{
-			System.out.println(i);
-		}
-                  
+        // Connect to local server at port 12211
+        Socket clientSocket = new Socket("localhost", 12211);
+
+        // Output stream to server
+        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+
+        // Input stream from server
+        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+        // Prompt for string 1
+        System.out.println("ENTER STRING 1:");
+        String string1 = inFromUser.readLine();
+
+        // Prompt for string 2
+        System.out.println("ENTER STRING 2:");
+        String string2 = inFromUser.readLine();
+
+        // Send both strings to server
+        outToServer.writeBytes(string1 + "\n");
+        outToServer.writeBytes(string2 + "\n");
+
+        // Receive message from server
+        String response = inFromServer.readLine();
+        System.out.println("MESSAGE FROM SERVER: " + response);
+
+        // Print END TIME
+        Date date2 = new Date();
+        System.out.println("END TIME: " + formatter.format(date2));
+
+        // Close resources
+        outToServer.close();
+        inFromServer.close();
+        inFromUser.close();
+        clientSocket.close();
     }
 }
